@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "StockApp",
-    "slug": "StockApp",
-    "version": "1.0.0",
+    "name": "vmgfoods",
+    "slug": "vmgfoods",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "jsEngine": "hermes",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -15,7 +16,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "This app uses the FaceId to login to your account.",
+        "NSPhotoLibraryUsageDescription": "This app access your photos to assign selected photo to the receipt",
+        "UIFileSharingEnabled": true
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stock.vmgfoods",
+      "buildNumber": "1.0.4"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +33,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fd71909e-0356-41df-9d9a-cabdec46fb5a"
+      },
+      "plugins": [
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "This app access your photos to assign selected photo to the receipt"
+          }
+        ]
+      ]
     }
   }
 }
