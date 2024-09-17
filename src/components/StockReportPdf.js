@@ -1,16 +1,15 @@
-import moment from 'moment';
-import * as Sharing from 'expo-sharing'
-import * as Print from 'expo-print';
-
+import moment from "moment";
+import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import { Platform } from "react-native";
 
 async function StockReportPdf(props, toDate) {
+  const row = props;
 
-    const row = props;
+  // console.log(row);
 
-    // console.log(row);
-
-    var table = `</br></br>
-    <table style="width:100%" > 
+  var table = `</br></br>
+    <table style="font-size:8px; width:100%" > 
     <tr align= "left">
     <th>LOCATION</th> 
         <th>R.DATE</th> 
@@ -26,57 +25,51 @@ async function StockReportPdf(props, toDate) {
 
     </tr>`;
 
-
-    var lotnumber = '';
-    row.forEach(item => {
-        if (lotnumber === '') {
-            table += `<tr align= "left">
+  var lotnumber = "";
+  row.forEach((item) => {
+    if (lotnumber === "") {
+      table += `<tr align= "left">
             <td>${item.location}</td>
             <td>${moment(item.receivedDate).format("DD/MM/YYYY")}</td>
             <td>${item.item}</td>
             <td>${item.lotnumber}</td>
             <td>${item.quantity}</td>
             <td>${item.unit}</td>
-            <td>${item.marka}</td>`
-            lotnumber = item.lotnumber
-
-
-        }
-        else if (lotnumber !== item.lotnumber) {
-            table += `<tr align= "left">
+            <td>${item.marka}</td>`;
+      lotnumber = item.lotnumber;
+    } else if (lotnumber !== item.lotnumber) {
+      table += `<tr align= "left">
             <td>${item.location}</td>
             <td>${moment(item.receivedDate).format("DD/MM/YYYY")}</td>
             <td>${item.item}</td>
             <td>${item.lotnumber}</td>
             <td>${item.quantity}</td>
             <td>${item.unit}</td>
-            <td>${item.marka}</td>`
-        }
-        else {
-            table += `<tr align= "left">
+            <td>${item.marka}</td>`;
+    } else {
+      table += `<tr align= "left">
             <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>`
-        }
+            <td></td>`;
+    }
 
-
-
-
-
-        table += `<td>${item.gatepass ? item.gatepass : ''}</td>
-                    <td>${item.gatePassDate ? moment(item.gatePassDate).format("DD/MM/YYYY") : ''}</td>
-                    <td>${item.issued ? item.issued : ''}</td>
-                    <td>${item.balance ? item.balance : ''}</td>
+    table += `<td>${item.gatepass ? item.gatepass : ""}</td>
+                    <td>${
+                      item.gatePassDate
+                        ? moment(item.gatePassDate).format("DD/MM/YYYY")
+                        : ""
+                    }</td>
+                    <td>${item.issued ? item.issued : ""}</td>
+                    <td>${item.balance ? item.balance : ""}</td>
                  </tr>`;
-        lotnumber = item.lotnumber;
-    });
+    lotnumber = item.lotnumber;
+  });
 
-
-    const htmlContent = `<html>
+  const htmlContent = `<html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
     </head>
@@ -94,37 +87,28 @@ async function StockReportPdf(props, toDate) {
     </body>
   </html>`;
 
-
-
-
-    const createAndSavePDF = async (html) => {
-        try {
-            const { uri } = await Print.printToFileAsync({ html });
-            if (Platform.OS === "ios") {
-                await Sharing.shareAsync(uri);
-            } else {
-                const permission = await MediaLibrary.requestPermissionsAsync();
-
-                if (permission.granted) {
-                    await MediaLibrary.createAssetAsync(uri);
-                }
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-
-
+  const createAndSavePDF = async (html) => {
     try {
-        await createAndSavePDF(htmlContent);
+      const { uri } = await Print.printToFileAsync({ html });
+      if (Platform.OS === "ios") {
+        await Sharing.shareAsync(uri);
+      } else {
+        const permission = await MediaLibrary.requestPermissionsAsync();
+
+        if (permission.granted) {
+          await MediaLibrary.createAssetAsync(uri);
+        }
+      }
     } catch (error) {
-        // console.log(error)
+      console.error(error);
     }
+  };
 
-
-
+  try {
+    await createAndSavePDF(htmlContent);
+  } catch (error) {
+    // console.log(error)
+  }
 }
 
 export default StockReportPdf;

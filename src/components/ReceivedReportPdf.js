@@ -1,17 +1,15 @@
-import moment from 'moment';
-import * as Sharing from 'expo-sharing'
-import * as Print from 'expo-print';
-
-
-
+import moment from "moment";
+import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import { Platform } from "react-native";
 
 const ReceivedReportPdf = async (props, fromDate, toDate) => {
-    const row = props;
+  const row = props;
 
-    var total = 0;
-    var totalBalance = 0;
+  var total = 0;
+  var totalBalance = 0;
 
-    var table = `</br></br>
+  var table = `</br></br>
     <table style="width:100%" > 
     <tr align= "left">
         <th>DATE</th> 
@@ -24,10 +22,8 @@ const ReceivedReportPdf = async (props, fromDate, toDate) => {
         <th>LOCATION</th>
     </tr>`;
 
-
-
-    row.forEach(item => {
-        table += `<tr align= "left">
+  row.forEach((item) => {
+    table += `<tr align= "left">
         <td>${moment(item.receivedDate).format("DD/MM/YYYY")}</td>
         <td>${item.item}</td>
         <td>${item.lotnumber}</td>
@@ -39,10 +35,10 @@ const ReceivedReportPdf = async (props, fromDate, toDate) => {
 
          </tr>`;
 
-        total += +item.quantity;
-        totalBalance += +item.balance
-    });
-    table += `
+    total += +item.quantity;
+    totalBalance += +item.balance;
+  });
+  table += `
     <tr align= "left" style="margin-top:: 20px; font-weight: bold; outline: thin solid">
         <td></td>
         <td>TOTAL:</td>
@@ -58,8 +54,7 @@ const ReceivedReportPdf = async (props, fromDate, toDate) => {
     
     `;
 
-
-    const htmlContent = `<html>
+  const htmlContent = `<html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
     </head>
@@ -71,42 +66,36 @@ const ReceivedReportPdf = async (props, fromDate, toDate) => {
         Inward Report
       </h1>
       <h3 style="font-size: 30px; font-family: Helvetica Neue; font-weight: normal;">
-      From Date: ${moment(fromDate).format("DD/MM/YYYY")} &emsp;&emsp; To Date: ${moment(toDate).format("DD/MM/YYYY")}
+      From Date: ${moment(fromDate).format(
+        "DD/MM/YYYY"
+      )} &emsp;&emsp; To Date: ${moment(toDate).format("DD/MM/YYYY")}
     </h3>
       ${table}
     </body>
   </html>`;
 
-
-
-
-    const createAndSavePDF = async (html) => {
-        try {
-            const { uri } = await Print.printToFileAsync({ html });
-            if (Platform.OS === "ios") {
-                await Sharing.shareAsync(uri);
-            } else {
-                const permission = await MediaLibrary.requestPermissionsAsync();
-
-                if (permission.granted) {
-                    await MediaLibrary.createAssetAsync(uri);
-                }
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-
-
+  const createAndSavePDF = async (html) => {
     try {
-        await createAndSavePDF(htmlContent);
+      const { uri } = await Print.printToFileAsync({ html });
+      if (Platform.OS === "ios") {
+        await Sharing.shareAsync(uri);
+      } else {
+        const permission = await MediaLibrary.requestPermissionsAsync();
+
+        if (permission.granted) {
+          await MediaLibrary.createAssetAsync(uri);
+        }
+      }
     } catch (error) {
-        // console.log(error)
+      console.error(error);
     }
+  };
 
-
-}
+  try {
+    await createAndSavePDF(htmlContent);
+  } catch (error) {
+    // console.log(error)
+  }
+};
 
 export default ReceivedReportPdf;

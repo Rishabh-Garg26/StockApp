@@ -2,7 +2,7 @@
   "expo": {
     "name": "vmgfoods",
     "slug": "vmgfoods",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "infoPlist": {
         "NSFaceIDUsageDescription": "This app uses the FaceId to login to your account.",
@@ -23,7 +21,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.stock.vmgfoods",
-      "buildNumber": "1.0.4"
+      "buildNumber": "1.0.5"
     },
     "android": {
       "adaptiveIcon": {
@@ -46,6 +44,12 @@
           }
         ]
       ]
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fd71909e-0356-41df-9d9a-cabdec46fb5a"
     }
   }
 }
