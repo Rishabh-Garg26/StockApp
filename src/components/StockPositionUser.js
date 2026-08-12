@@ -97,24 +97,23 @@ const StockPositionUser = () => {
   };
 
   useEffect(() => {
-    itemOprions != [] &&
-      Transaction.getReceivedItems()
-        .then((res) => {
-          var tempArray = [];
-          res.forEach((element) => {
-            const tempValue = {
-              label: element[`upper(item)`],
-              value: element[`upper(item)`],
-            };
-            tempArray.push(tempValue);
-          });
-
-          setItemOptions(tempArray);
-        })
-        .catch((err) => {
-          // console.log(err);
-        });
+    loadAvailableItems();
   }, []);
+
+  const loadAvailableItems = async () => {
+    try {
+      const res = await Transaction.getAvailableItems('', 100);
+      if (res && res.length > 0) {
+        const tempArray = res.map((element) => ({
+          label: element.item,
+          value: element.item,
+        }));
+        setItemOptions(tempArray);
+      }
+    } catch (err) {
+      console.error('Error loading available items:', err);
+    }
+  };
 
   const getStockPosition = async () => {
     const result = await Transaction.getStockPosition(

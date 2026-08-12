@@ -1,8 +1,6 @@
 import { LOGIN_SUCCESS, LOGOUT, USEREXIST } from "./type";
 import AuthService from "../services/authService";
-import { openDatabase } from "expo-sqlite/legacy";
-// const db = openDatabase("db");
-const db = openDatabase("db");
+import DatabaseService from "../services/database";
 
 export const login = () => (dispatch) => {
   return AuthService.logIn().then(
@@ -22,6 +20,7 @@ export const login = () => (dispatch) => {
     }
   );
 };
+
 export const logout = () => (dispatch) => {
   return AuthService.logOut().then((response) => {
     if (response.status === "success") {
@@ -33,25 +32,16 @@ export const logout = () => (dispatch) => {
     }
   });
 };
+
 export const userExists = () => {
-  // db.closeAsync();
-  // db.deleteAsync();
-  return (dispatch) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='User';",
-        [],
-        (_, { rows: { _array } }) => {
-          // Retrieve the data from the result and dispatch the action
-          // console.log(_array[0][`count(*)`]);
-          if (_array[0][`count(*)`] > 0) {
-            dispatch({ type: USEREXIST });
-          }
-        },
-        (_, error) => {
-          console.error("SQL query error:", error);
-        }
-      );
-    });
+  return async (dispatch) => {
+    try {
+      const exists = await DatabaseService.checkDatabase();
+      if (exists) {
+        dispatch({ type: USEREXIST });
+      }
+    } catch (error) {
+      console.error("Error checking if user exists:", error);
+    }
   };
 };

@@ -35,16 +35,16 @@
     "extra": {
       "eas": {
         "projectId": "fd71909e-0356-41df-9d9a-cabdec46fb5a"
-      },
-      "plugins": [
-        [
-          "expo-image-picker",
-          {
-            "photosPermission": "This app access your photos to assign selected photo to the receipt"
-          }
-        ]
-      ]
+      }
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app access your photos to assign selected photo to the receipt"
+        }
+      ]
+    ],
     "runtimeVersion": {
       "policy": "appVersion"
     },

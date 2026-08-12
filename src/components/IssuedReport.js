@@ -2,21 +2,18 @@ import { useEffect } from "react";
 import { useState } from "react";
 import {
   Alert,
-  Pressable,
   ScrollView,
-  StyleSheet,
-  Text,
-  View,
+  Platform,
 } from "react-native";
+import { 
+  Card, YStack, XStack, Button, Text, H2, Paragraph, Spinner, View, Label, Switch 
+} from 'tamagui';
+import { Icon } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
-import { Icon } from "@rneui/themed";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { ActivityIndicator, Button, Switch } from "react-native-paper";
 import moment from "moment";
 import Transaction from "../services/transaction";
 import IssuedReportPdf from "./IssuedReportpdf";
-import { Platform } from "react-native";
 
 const IssuedReport = () => {
   const [isFocusOrder, setIsFocusOrder] = useState(false);
@@ -36,7 +33,6 @@ const IssuedReport = () => {
       groupBy,
       orderby
     ).then(async (res) => {
-      // console.log(res);
       setLoader(true);
       if (res.length === 0) {
         Alert.alert(
@@ -74,20 +70,19 @@ const IssuedReport = () => {
     }
     const to = moment(date, "DD/MM/YYYY").toDate();
     const from = new Date(fromDate);
-    // console.log(e)
     if (fromDate !== "" && from.getTime() > to.getTime()) {
       setToDate(fromDate);
     } else {
       setToDate(moment(date, "DD/MM/YYYY").toDate());
     }
   };
+
   const onChangeFromDate = (e, date) => {
     if (Platform.OS === "android") {
       setShowFromDate(false);
     }
     const to = new Date(toDate);
     const from = moment(date, "DD/MM/YYYY").toDate();
-    // console.log(to + '=' + toDate);
     if (toDate !== "" && from.getTime() > to.getTime()) {
       setFromDate(toDate);
     } else {
@@ -95,292 +90,221 @@ const IssuedReport = () => {
     }
   };
 
-  const renderLabelOrder = () => {
-    if (orderby || isFocusOrder) {
-      return (
-        <Text style={[styles.label, isFocusOrder && { color: "blue" }]}>
-          OrderBy
-        </Text>
-      );
-    }
-    return null;
-  };
-
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View
-          style={{
-            backgroundColor: "white",
-            padding: 16,
-            flexDirection: "row",
-          }}
-        >
-          <Text style={{ fontSize: 18, width: "30%" }}>Date From: </Text>
-          <TouchableOpacity
-            onPress={() => {
-              setShowFromDate(true);
-            }}
-            style={{ flexDirection: "row", borderWidth: 1, width: "80%" }}
-          >
-            <Text style={{ fontSize: 18, marginLeft: 10, width: "70%" }}>
-              {moment(fromDate).format("DD-MM-YYYY")}
-            </Text>
-            <Icon
-              name="today"
-              size={28}
-              color="#0d6efd"
-              style={{ float: "right" }}
-            />
-          </TouchableOpacity>
-        </View>
+    <ScrollView 
+      style={{ flex: 1, backgroundColor: '#f5f5f5' }}
+      contentContainerStyle={{ paddingBottom: 50 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <YStack p="$4" space="$4" paddingTop="$6">
+        {/* Header */}
+        <Card elevate size="$4" padding="$5" borderRadius="$5" marginTop="$2">
+          <YStack space="$5" alignItems="center">
+            <Icon name="assessment" size={40} color="$blue10" />
+            <H2 fontWeight="800" fontSize="$10" padding="$2" color="$color" textAlign="center">
+              Issued Report
+            </H2>
+            <Paragraph textAlign="center" fontSize="$4" color="$color11">
+              Generate and download issued items report for selected date range.
+            </Paragraph>
+          </YStack>
+        </Card>
 
-        <View>
-          {showFromDate && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={fromDate}
-              maximumDate={toDate}
-              mode={"date"}
-              onChange={onChangeFromDate}
-              display={Platform.OS === "android" ? "default" : "spinner"}
-              style={styles.datepicker}
-            />
-          )}
-          {showFromDate && Platform.OS === "ios" && (
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
-              <TouchableOpacity
-                onPress={() => setShowFromDate(false)}
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  backgroundColor: "#0d6efd",
-                  marginBottom: 15,
-                  borderRadius: 10,
-                }}
+        {/* Date Selection */}
+        <Card elevate size="$4" padding="$5" borderRadius="$5">
+          <YStack space="$4">
+            <H2 fontWeight="700" fontSize="$6" color="$color" textAlign="center" marginBottom="$2">
+              Select Date Range
+            </H2>
+
+            {/* From Date */}
+            <Label fontWeight="700" fontSize="$4" color="$color">Date From</Label>
+            <Card elevate size="$2" padding="$3" borderRadius="$3" backgroundColor="white">
+              <Button
+                backgroundColor="transparent"
+                color="$blue10"
+                onPress={() => setShowFromDate(true)}
+                icon={<Icon name="event" size={20} color="$blue10" />}
+                borderRadius="$3"
+                height={44}
+                justifyContent="flex-start"
+                pressStyle={{ backgroundColor: '$blue5' }}
               >
-                <Text style={{ fontSize: 16, color: "white" }}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+                <Text color="$blue10" fontSize="$4" fontWeight="600">
+                  {moment(fromDate).format("DD-MM-YYYY")}
+                </Text>
+              </Button>
+            </Card>
+            {showFromDate && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={fromDate}
+                maximumDate={toDate}
+                display={Platform.OS === "android" ? "default" : "spinner"}
+                mode="date"
+                onChange={onChangeFromDate}
+                style={{ marginBottom: 10 }}
+              />
+            )}
+            {showFromDate && Platform.OS === "ios" && (
+              <XStack justifyContent="center" space="$3">
+                <Button
+                  size="$3"
+                  backgroundColor="$blue10"
+                  color="white"
+                  onPress={() => setShowFromDate(false)}
+                  borderRadius="$3"
+                  pressStyle={{ backgroundColor: '$blue11' }}
+                >
+                  <Text color="white" fontSize="$3" fontWeight="600">Confirm</Text>
+                </Button>
+              </XStack>
+            )}
 
-        <View
-          style={{
-            backgroundColor: "white",
-            padding: 16,
-            flexDirection: "row",
-          }}
-        >
-          <Text style={{ fontSize: 18, width: "30%" }}>Date: To: </Text>
-          <TouchableOpacity
-            onPress={() => {
-              setShowToDate(true);
-            }}
-            style={{ flexDirection: "row", borderWidth: 1, width: "80%" }}
-          >
-            <Text style={{ fontSize: 18, marginLeft: 10, width: "70%" }}>
-              {moment(toDate).format("DD-MM-YYYY")}
-            </Text>
-            <Icon
-              name="today"
-              size={28}
-              color="#0d6efd"
-              style={{ float: "right" }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View>
-          {showToDate && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={toDate}
-              maximumDate={maxDate}
-              minimumDate={fromDate}
-              mode={"date"}
-              display={Platform.OS === "android" ? "default" : "spinner"}
-              onChange={onChangeToDate}
-              style={styles.datepicker}
-            />
-          )}
-          {showToDate && Platform.OS === "ios" && (
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
-              <TouchableOpacity
-                onPress={() => setShowToDate(false)}
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  backgroundColor: "#0d6efd",
-                  marginBottom: 15,
-                  borderRadius: 10,
-                }}
+            {/* To Date */}
+            <Label fontWeight="700" fontSize="$4" color="$color">Date To</Label>
+            <Card elevate size="$2" padding="$3" borderRadius="$3" backgroundColor="white">
+              <Button
+                backgroundColor="transparent"
+                color="$blue10"
+                onPress={() => setShowToDate(true)}
+                icon={<Icon name="event" size={20} color="$blue10" />}
+                borderRadius="$3"
+                height={44}
+                justifyContent="flex-start"
+                pressStyle={{ backgroundColor: '$blue5' }}
               >
-                <Text style={{ fontSize: 16, color: "white" }}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-        <View
-          style={{
-            backgroundColor: "white",
-            padding: 16,
-            marginLeft: 10,
-            flexDirection: "row",
-          }}
-        >
-          <Switch
-            value={groupBy}
-            onValueChange={() => {
-              setGroupBy(!groupBy);
-            }}
-          />
-          <Text style={styles.label}>Itemwise</Text>
-        </View>
-        {renderLabelOrder()}
-        <Dropdown
-          style={[styles.dropdown, isFocusOrder && { borderColor: "blue" }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          data={[
-            { label: "As Entered", value: "id" },
-            { label: "Lotwise", value: "lotnumber" },
-            { label: "DateWise", value: "gatepassdate" },
-          ]}
-          search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocusOrder ? "Select Order" : "..."}
-          searchPlaceholder="Search..."
-          value={orderby}
-          itemTextStyle={{ textTransform: "capitalize" }}
-          onFocus={() => setIsFocusOrder(true)}
-          onBlur={() => setIsFocusOrder(false)}
-          onChange={(item) => {
-            setOrderby(item.value);
-            setIsFocusOrder(false);
-          }}
-        />
-        <View style={styles.container}>
-          {loader && <ActivityIndicator size="large" />}
+                <Text color="$blue10" fontSize="$4" fontWeight="600">
+                  {moment(toDate).format("DD-MM-YYYY")}
+                </Text>
+              </Button>
+            </Card>
+            {showToDate && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={toDate}
+                maximumDate={maxDate}
+                minimumDate={fromDate}
+                mode="date"
+                display={Platform.OS === "android" ? "default" : "spinner"}
+                onChange={onChangeToDate}
+                style={{ marginBottom: 10 }}
+              />
+            )}
+            {showToDate && Platform.OS === "ios" && (
+              <XStack justifyContent="center" space="$3">
+                <Button
+                  size="$3"
+                  backgroundColor="$blue10"
+                  color="white"
+                  onPress={() => setShowToDate(false)}
+                  borderRadius="$3"
+                  pressStyle={{ backgroundColor: '$blue11' }}
+                >
+                  <Text color="white" fontSize="$3" fontWeight="600">Confirm</Text>
+                </Button>
+              </XStack>
+            )}
+          </YStack>
+        </Card>
 
+        {/* Options */}
+        <Card elevate size="$4" padding="$5" borderRadius="$5">
+          <YStack space="$4">
+            <H2 fontWeight="700" fontSize="$6" color="$color" textAlign="center" marginBottom="$2">
+              Report Options
+            </H2>
+
+            {/* Group By Switch */}
+            <XStack alignItems="center" space="$3" padding="$3" backgroundColor="$gray5" borderRadius="$3">
+              <Switch
+                id="groupBy"
+                checked={groupBy}
+                onCheckedChange={(checked) => {
+                  setGroupBy(checked);
+                }}
+                size="$4"
+                backgroundColor="$gray8"
+                borderColor="$gray10"
+              >
+                <Switch.Thumb animation="quick" />
+              </Switch>
+              <Label htmlFor="groupBy" fontWeight="600" fontSize="$4" color="$color" flex={1}>
+                Group by Item
+              </Label>
+            </XStack>
+
+            {/* Order By Dropdown */}
+            <Label fontWeight="700" fontSize="$4" color="$color">Order By</Label>
+            <Card elevate size="$2" padding="$3" borderRadius="$3" backgroundColor="white">
+              <Dropdown
+                style={{
+                  height: 44,
+                  borderWidth: 0,
+                  borderRadius: 8,
+                  paddingHorizontal: 8,
+                }}
+                placeholderStyle={{
+                  fontSize: 16,
+                  color: '#666',
+                }}
+                selectedTextStyle={{
+                  fontSize: 16,
+                  color: '#333',
+                  fontWeight: '600',
+                }}
+                inputSearchStyle={{
+                  height: 40,
+                  fontSize: 16,
+                }}
+                data={[
+                  { label: "As Entered", value: "id" },
+                  { label: "Lotwise", value: "lotnumber" },
+                  { label: "DateWise", value: "gatepassdate" },
+                ]}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select Order"
+                searchPlaceholder="Search..."
+                value={orderby}
+                itemTextStyle={{ textTransform: "capitalize" }}
+                onFocus={() => setIsFocusOrder(true)}
+                onBlur={() => setIsFocusOrder(false)}
+                onChange={(item) => {
+                  setOrderby(item.value);
+                  setIsFocusOrder(false);
+                }}
+              />
+            </Card>
+          </YStack>
+        </Card>
+
+        {/* Download Button */}
+        <Card elevate size="$3" padding="$3" borderRadius="$4" backgroundColor="$green10" marginTop="$4">
           <Button
-            style={{ height: 60, marginTop: 50 }}
-            labelStyle={{ marginTop: 15, fontSize: 18 }}
-            mode="contained"
+            size="$6"
+            backgroundColor="transparent"
+            color="white"
             onPress={getIssuedReportPdf}
+            borderRadius="$4"
+            icon={<Icon name="download" size={24} color="white" />}
+            disabled={loader}
+            pressStyle={{ backgroundColor: '$green11' }}
           >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Download
-            </Text>
+            {loader ? (
+              <Spinner color="white" />
+            ) : (
+              <Text color="white" fontSize="$5" fontWeight="700">
+                Download Report
+              </Text>
+            )}
           </Button>
-        </View>
-      </View>
+        </Card>
+      </YStack>
     </ScrollView>
   );
 };
 
 export default IssuedReport;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 16,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  label: {
-    position: "absolute",
-    backgroundColor: "white",
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-    textTransform: "capitalize",
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-    textTransform: "capitalize",
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "blue",
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-  modalTextBold: {
-    marginTop: 10,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  datePickerStyle: {
-    width: "90%",
-    marginTop: 20,
-  },
-  icon: {
-    marginTop: 20,
-  },
-  label: {
-    marginLeft: 3,
-    marginTop: 5,
-    fontSize: 18,
-  },
-  datepicker: {
-    height: 120,
-    marginTop: -10,
-  },
-});

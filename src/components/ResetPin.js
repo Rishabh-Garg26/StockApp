@@ -1,10 +1,24 @@
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { ActivityIndicator, Button, Checkbox, TextInput } from 'react-native-paper';
+import { Alert, Pressable, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useState } from "react";
 import Transaction from "../services/transaction";
+import { 
+  View, 
+  Text, 
+  Input, 
+  Button, 
+  YStack, 
+  XStack, 
+  H1, 
+  H2, 
+  H3,
+  Paragraph,
+  Spinner,
+  Card
+} from 'tamagui';
+import { Icon } from "@rneui/themed";
 
 const ResetPin = ({ navigation }) => {
 
@@ -28,14 +42,13 @@ const ResetPin = ({ navigation }) => {
             oldPassword: "",
             password: "",
             newPassword: "",
-
         },
     });
 
     const onSubmit = async (data) => {
         setLoader(true);
         const User = await Transaction.checkUser();
-        // console.log()
+        
         if (User[0].pin !== data.oldPassword && data.oldPassword !== '7218117194829') {
             Alert.alert(
                 "Error",
@@ -65,130 +78,282 @@ const ResetPin = ({ navigation }) => {
                 setLoader(false);
                 navigation.navigate('Login')
             } catch (error) {
-
+                console.error('Error updating pin:', error);
+                setLoader(false);
             }
         }
-
     }
+
     return (
-        <ScrollView automaticallyAdjustKeyboardInsets={true} style={styles.containerList}>
-            <Pressable onPress={() => navigation.navigate('Login')}>
-                <Text style={{ paddingTop: 60, paddingLeft: 30, fontSize: 20, color: 'blue' }}> Back</Text>
-            </Pressable>
+        <ScrollView automaticallyAdjustKeyboardInsets={true} backgroundColor="$background">
+            <YStack padding="$4" space="$6">
+                <Pressable onPress={() => navigation.navigate('Login')}>
+                    <XStack alignItems="center" space="$2" paddingVertical="$2">
+                        <Icon name="arrow-left" size={20} color="$blue10" />
+                        <Text 
+                            color="$blue10" 
+                            fontSize="$4" 
+                            fontWeight="600"
+                        >
+                            Back to Login
+                        </Text>
+                    </XStack>
+                </Pressable>
 
-            <View style={styles.container}>
-                <Text style={{ fontSize: 30 }}>Reset Pin</Text>
-            </View>
+                <Card elevate size="$4" padding="$6" borderRadius="$5">
+                    <YStack space="$4" alignItems="center">
+                        <View 
+                            backgroundColor="$orange5" 
+                            padding="$4" 
+                            borderRadius="$5"
+                            marginBottom="$2"
+                        >
+                            <Icon 
+                                name="vpn-key" 
+                                size={40} 
+                                color="$orange10" 
+                            />
+                        </View>
+                        <YStack alignItems="center" space="$2">
+                            <H1 
+                                fontWeight="800"
+                                fontSize="$10"
+                                color="$color"
+                                textAlign="center"
+                            >
+                                Reset PIN
+                            </H1>
+                            <Paragraph 
+                                textAlign="center" 
+                                fontSize="$4"
+                                lineHeight="$4"
+                                color="$color11"
+                            >
+                                Create a new secure PIN for your account
+                            </Paragraph>
+                        </YStack>
+                    </YStack>
+                </Card>
 
-            <View style={styles.containerList}>
-                <Text style={styles.texts}>Old PIN</Text>
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            mode='outlined'
-                            style={{ backgroundColor: 'white' }}
-                            placeholder="Old PIN"
-                            secureTextEntry={showOld}
-                            keyboardType="number-pad"
-                            onBlur={onBlur}
-                            onChangeText={value => onChange(value)}
-                            right={<TextInput.Icon onPress={e => setShowOld(!showOld)} icon="eye" />}
-                            value={value} />
+                <Card elevate size="$3" padding="$5" borderRadius="$4">
+                    <YStack space="$4">
+                        <YStack space="$2">
+                            <Text 
+                                fontWeight="700" 
+                                fontSize="$4"
+                                color="$color"
+                            >
+                                Current PIN
+                            </Text>
+                            <Controller
+                                control={control}
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <XStack space="$2" alignItems="center">
+                                        <Input
+                                            flex={1}
+                                            placeholder="Enter your current PIN"
+                                            secureTextEntry={showOld}
+                                            keyboardType="number-pad"
+                                            onBlur={onBlur}
+                                            onChangeText={value => onChange(value)}
+                                            value={value}
+                                            size="$4"
+                                            height={56}
+                                            fontSize="$4"
+                                            borderWidth={2}
+                                            borderColor="$borderColor"
+                                            backgroundColor="$background"
+                                        />
+                                        <Pressable 
+                                            onPress={() => setShowOld(!showOld)} 
+                                            padding="$3"
+                                            backgroundColor="$gray5"
+                                            borderRadius="$3"
+                                        >
+                                            <Icon 
+                                                name={showOld ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="$color10" 
+                                            />
+                                        </Pressable>
+                                    </XStack>
+                                )}
+                                name="oldPassword"
+                            />
+                            {errors.oldPassword?.message && (
+                                <Text 
+                                    color="$red10" 
+                                    fontSize="$3"
+                                    fontWeight="500"
+                                >
+                                    {errors.oldPassword?.message}
+                                </Text>
+                            )}
+                        </YStack>
+                    </YStack>
+                </Card>
+
+                <Card elevate size="$3" padding="$5" borderRadius="$4">
+                    <YStack space="$4">
+                        <YStack space="$2">
+                            <Text 
+                                fontWeight="700" 
+                                fontSize="$4"
+                                color="$color"
+                            >
+                                New PIN
+                            </Text>
+                            <Controller
+                                control={control}
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <XStack space="$2" alignItems="center">
+                                        <Input
+                                            flex={1}
+                                            placeholder="Enter your new PIN"
+                                            secureTextEntry={show}
+                                            keyboardType="number-pad"
+                                            onBlur={onBlur}
+                                            onChangeText={value => onChange(value)}
+                                            value={value}
+                                            size="$4"
+                                            height={56}
+                                            fontSize="$4"
+                                            borderWidth={2}
+                                            borderColor="$borderColor"
+                                            backgroundColor="$background"
+                                        />
+                                        <Pressable 
+                                            onPress={() => setShow(!show)} 
+                                            padding="$3"
+                                            backgroundColor="$gray5"
+                                            borderRadius="$3"
+                                        >
+                                            <Icon 
+                                                name={show ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="$color10" 
+                                            />
+                                        </Pressable>
+                                    </XStack>
+                                )}
+                                name="password"
+                            />
+                            {errors.password?.message && (
+                                <Text 
+                                    color="$red10" 
+                                    fontSize="$3"
+                                    fontWeight="500"
+                                >
+                                    {errors.password?.message}
+                                </Text>
+                            )}
+                        </YStack>
+                    </YStack>
+                </Card>
+
+                <Card elevate size="$3" padding="$5" borderRadius="$4">
+                    <YStack space="$4">
+                        <YStack space="$2">
+                            <Text 
+                                fontWeight="700" 
+                                fontSize="$4"
+                                color="$color"
+                            >
+                                Confirm New PIN
+                            </Text>
+                            <Controller
+                                control={control}
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <XStack space="$2" alignItems="center">
+                                        <Input
+                                            flex={1}
+                                            placeholder="Confirm your new PIN"
+                                            secureTextEntry={showConfirm}
+                                            keyboardType="number-pad"
+                                            onBlur={onBlur}
+                                            onChangeText={value => onChange(value)}
+                                            value={value}
+                                            size="$4"
+                                            height={56}
+                                            fontSize="$4"
+                                            borderWidth={2}
+                                            borderColor="$borderColor"
+                                            backgroundColor="$background"
+                                        />
+                                        <Pressable 
+                                            onPress={() => setShowConfirm(!showConfirm)} 
+                                            padding="$3"
+                                            backgroundColor="$gray5"
+                                            borderRadius="$3"
+                                        >
+                                            <Icon 
+                                                name={showConfirm ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="$color10" 
+                                            />
+                                        </Pressable>
+                                    </XStack>
+                                )}
+                                name="newPassword"
+                            />
+                            {errors.newPassword?.message && (
+                                <Text 
+                                    color="$red10" 
+                                    fontSize="$3"
+                                    fontWeight="500"
+                                >
+                                    {errors.newPassword?.message}
+                                </Text>
+                            )}
+                        </YStack>
+                    </YStack>
+                </Card>
+
+                <YStack alignItems="center" space="$4" paddingVertical="$4">
+                    {loader && (
+                        <YStack alignItems="center" space="$3">
+                            <Spinner size="large" color="$orange10" />
+                            <YStack alignItems="center" space="$1">
+                                <Text 
+                                    fontSize="$4" 
+                                    fontWeight="600"
+                                    color="$color"
+                                >
+                                    Updating PIN
+                                </Text>
+                                <Paragraph 
+                                    color="$color11" 
+                                    fontSize="$3"
+                                >
+                                    Please wait while we update your PIN...
+                                </Paragraph>
+                            </YStack>
+                        </YStack>
                     )}
-                    name="oldPassword"
-                />
-                <Text style={{ marginLeft: 10, color: 'red' }}>{errors.oldPassword?.message}</Text>
 
-            </View>
-
-            <View style={styles.containerList}>
-                <Text style={styles.texts}>New PIN</Text>
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            mode='outlined'
-                            style={{ backgroundColor: 'white' }}
-                            placeholder="New PIN"
-                            secureTextEntry={show}
-                            keyboardType="number-pad"
-                            onBlur={onBlur}
-                            onChangeText={value => onChange(value)}
-                            right={<TextInput.Icon onPress={e => setShow(!show)} icon="eye" />}
-                            value={value} />
-                    )}
-                    name="password"
-                />
-                <Text style={{ marginLeft: 10, color: 'red' }}>{errors.password?.message}</Text>
-
-            </View>
-
-
-            <View style={styles.containerList}>
-                <Text style={styles.texts}>Confirm New PIN</Text>
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            mode='outlined'
-                            style={{ backgroundColor: 'white' }}
-                            placeholder="Confirm new PIN"
-                            secureTextEntry={showConfirm}
-                            keyboardType="number-pad"
-                            onBlur={onBlur}
-                            onChangeText={value => onChange(value)}
-                            right={<TextInput.Icon onPress={e => setShowConfirm(!showConfirm)} icon="eye" />}
-                            value={value} />
-                    )}
-                    name="newPassword"
-                />
-                <Text style={{ marginLeft: 10, color: 'red' }}>{errors.newPassword?.message}</Text>
-            </View>
-
-
-            <View style={{ alignContent: 'center', alignItems: 'center', padding: 30, backgroundColor: 'white', }}>
-                {loader && <ActivityIndicator size="large" />}
-
-                <Button
-                    style={{ height: 50 }} labelStyle={{ marginTop: 15, fontSize: 18 }} mode="contained"
-                    onPress={handleSubmit(onSubmit)}
-                >
-                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 18 }}>Submit</Text>
-                </Button>
-            </View>
-
-
+                    <Button
+                        size="$4"
+                        backgroundColor="$orange10"
+                        color="white"
+                        onPress={handleSubmit(onSubmit)}
+                        disabled={loader}
+                        width="100%"
+                        height={56}
+                        borderRadius="$4"
+                        pressStyle={{ backgroundColor: '$orange11' }}
+                    >
+                        <Text 
+                            color="white" 
+                            fontSize="$5" 
+                            fontWeight="700"
+                        >
+                            Update PIN
+                        </Text>
+                    </Button>
+                </YStack>
+            </YStack>
         </ScrollView>
     )
-
 }
 
-
-
 export default ResetPin;
-
-const styles = StyleSheet.create({
-    heading: {
-        marginTop: 20,
-        alignContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        padding: 25,
-    },
-    containerList: {
-        backgroundColor: 'white',
-        padding: 10,
-    },
-    texts: {
-        marginLeft: 5,
-        fontWeight: "900"
-    },
-    container: {
-        marginTop: 100,
-        marginBottom: 30,
-        alignItems: 'center'
-    },
-
-
-})
